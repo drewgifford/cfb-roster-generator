@@ -74,7 +74,7 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 		],
 		statMeans: {
 			physical: 75,
-			passing: 60, // Baseline only, overridden by OVR
+			passing: 80, // Baseline only, overridden by OVR
 			mental: 65,
 			durability: 83,
 			ballCarrier: 50,

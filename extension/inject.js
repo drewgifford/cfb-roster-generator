@@ -210,6 +210,11 @@ function simulateUserSelect($input, value) {
 	}
 	const option = valueMap[value];
 
+  if (!option) {
+    console.warn(`Option ${value} not found for input ${input.value}, skipping...`);
+    return;
+  }
+
 	option.selected = true;
 	input.value = option.value;
 	input.dispatchEvent(
