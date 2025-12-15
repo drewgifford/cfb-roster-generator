@@ -28,7 +28,8 @@
 		"typescript-eslint": "^8.48.1",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.15",
-		"vitest-browser-svelte": "^2.0.1"
+		"vitest-browser-svelte": "^2.0.1",
+		"web-ext": "^9.2.0"
 	},
 	"private": true,
 	"scripts": {
@@ -43,7 +44,8 @@
 		"lint:fix": "eslint . --fix",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"deploy": "gh-pages -d build -t"
+		"deploy": "gh-pages -d build -t",
+    "build:extension": "web-ext build --source-dir extension --artifacts-dir dist"
 	},
 	"type": "module",
 	"dependencies": {

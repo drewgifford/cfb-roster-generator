@@ -103,8 +103,6 @@ async function importRoster(data) {
 			}
 
 			playerCount++;
-
-			if (playerCount >= 1) break;
 		}
 
 		setStatus('Roster imported successfully!');
@@ -256,6 +254,7 @@ async function inputPlayer(button, player) {
 	await inputPlayerBio(player);
 	await sleep(100);
 	await inputPlayerStats(player);
+  await sleep(500);
 }
 
 async function inputPlayerStats(player) {
@@ -280,6 +279,8 @@ async function inputPlayerStats(player) {
 			simulateUserInput(input, statValue);
 		}
 	}
+
+  await sleep(100);
 
 	const $selectContainers = $('app-roster-content .select-wrapper');
 	for (const container of $selectContainers) {
@@ -326,13 +327,15 @@ async function inputPlayerStats(player) {
 		}
 	}
 
+  await sleep(100);
+
 	// Workaround for mental abilities not being selected correctly
 	const mentalAbilityIds = ['MentalAbility0', 'MentalAbility1', 'MentalAbility2'];
 	const usedMentalAbilities = [];
 	for (const id of mentalAbilityIds) {
 		const button = $(`#${id}`);
 		button.get(0).click();
-		await sleep(50);
+		await sleep(100);
 
 		const buttons = $('div.mental-abilities button');
 		for (const b of buttons) {
@@ -347,6 +350,8 @@ async function inputPlayerStats(player) {
 		}
 	}
 
+  await sleep(100);
+
 	const $abilityContainers = $('app-abilities .flex-row.ng-star-inserted');
 	for (const container of $abilityContainers) {
 		const ability = $(container).find('span.ability-label').text().trim();
@@ -357,6 +362,8 @@ async function inputPlayerStats(player) {
 			simulateUserSelectByNumber(select, abilityLevel);
 		}
 	}
+
+  await sleep(100);
 
 	for (const id of mentalAbilityIds) {
 		const container = $(`#${id}`);
@@ -369,7 +376,7 @@ async function inputPlayerStats(player) {
 		}
 	}
 
-	await sleep(50);
+	await sleep(100);
 }
 
 async function inputPlayerBio(player) {
@@ -380,7 +387,7 @@ async function inputPlayerBio(player) {
 			break;
 		}
 	}
-	await sleep(100);
+	await sleep(500);
 
 	const $textInputContainers = $('app-roster-content .text-input');
 
@@ -464,12 +471,10 @@ async function inputPlayerBio(player) {
 	const headButton = $headContainer.get(headRand);
 	headButton.click();
 
-	await sleep(1000);
+	await sleep(2000);
 
 	const $errorTexts = $('.error-text--active');
-
 	if ($errorTexts.length > 0) {
-		alert('Error inputting player bio');
-		throw new Error('Error inputting player bio');
+		alert('Error inputting player bio. Will continue with next players, but the script may stop.');
 	}
 }

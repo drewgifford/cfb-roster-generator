@@ -15,11 +15,11 @@ export function generateRandomName(): { firstName: string; lastName: string } {
 	do {
 		firstName = faker.person
 			.firstName('male')
-			.replace(/[^a-zA-Z ]/g, '')
+      .replaceAll("'", '')
 			.trim();
 		lastName = faker.person
 			.lastName('male')
-			.replace(/[^a-zA-Z ]/g, '')
+      .replaceAll("'", '')
 			.trim();
 	} while (
 		profanity.exists(firstName) ||
