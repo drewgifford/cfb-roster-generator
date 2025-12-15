@@ -14,4 +14,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cfb-roster-importer
-          path: ./cfb-roster-importer.xpi
+          path: ./extension
