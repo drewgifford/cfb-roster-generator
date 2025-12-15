@@ -1,0 +1,12 @@
+{
+	"manifest_version": 2,
+	"name": "CFB OVR Formula Calculator",
+	"version": "1.0",
+	"description": "Estimates the OVR formulas for CFB26 from Team Builder.",
+	"permissions": ["activeTab", "tabs"],
+	"browser_action": {
+		"default_title": "CFB Calculator",
+		"default_popup": "popup.html"
+	},
+	"web_accessible_resources": ["jquery.min.js", "content-script.js"]
+}

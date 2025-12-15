@@ -1,0 +1,25 @@
+{
+	"manifest_version": 2,
+	"name": "CFB26 Roster Importer",
+	"version": "0.1",
+	"description": "Imports rosters from CFB Roster Builder",
+	"permissions": ["activeTab", "tabs"],
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"icons": {
+		"64": "cfb-icon.png"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://www.ea.com/games/ea-sports-college-football/team-builder/team-create/*"],
+			"js": ["jquery.min.js", "inject.js"]
+		}
+	],
+	"browser_action": {
+		"default_icon": {
+			"64": "cfb-icon.png"
+		},
+		"default_title": "CFB26 Roster Importer"
+	}
+}
