@@ -107,7 +107,7 @@
 							value={selectedPlayer.year}
 							onchange={(e) => update({ year: e.currentTarget.value as Year })}
 						>
-							{#each YEARS as year}
+							{#each YEARS as year (year)}
 								<option value={year}>{YEAR_DISPLAY[year]}</option>
 							{/each}
 						</select>
@@ -164,7 +164,7 @@
 							value={selectedPlayer.devTrait}
 							onchange={(e) => update({ devTrait: e.currentTarget.value as DevTrait })}
 						>
-							{#each DEV_TRAITS as devTrait}
+							{#each DEV_TRAITS as devTrait (devTrait)}
 								<option value={devTrait}>{devTrait}</option>
 							{/each}
 						</select>
@@ -178,7 +178,7 @@
 							value={selectedPlayer.potential}
 							onchange={(e) => update({ potential: e.currentTarget.value as PlayerPotential })}
 						>
-							{#each POTENTIALS as potential}
+							{#each POTENTIALS as potential (potential)}
 								<option value={potential}>{potential}</option>
 							{/each}
 						</select>
@@ -192,7 +192,7 @@
 							value={selectedPlayer.handedness}
 							onchange={(e) => update({ handedness: e.currentTarget.value as Handedness })}
 						>
-							{#each ['Left', 'Right'] as handedness}
+							{#each ['Left', 'Right'] as handedness (handedness)}
 								<option value={handedness}>{handedness}</option>
 							{/each}
 						</select>
@@ -222,7 +222,7 @@
 							value={selectedPlayer.dealbreaker}
 							onchange={(e) => update({ dealbreaker: e.currentTarget.value as Dealbreaker })}
 						>
-							{#each DEALBREAKERS as dealbreaker}
+							{#each DEALBREAKERS as dealbreaker (dealbreaker)}
 								<option value={dealbreaker}>{dealbreaker}</option>
 							{/each}
 						</select>
