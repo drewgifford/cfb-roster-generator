@@ -42,10 +42,12 @@
 		"lint": "prettier --check . && eslint .",
 		"lint:fix": "eslint . --fix",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "npm run test:unit -- --run",
+    "deploy": "gh-pages -d build"
 	},
 	"type": "module",
 	"dependencies": {
-		"@2toad/profanity": "^3.2.0"
+		"@2toad/profanity": "^3.2.0",
+		"gh-pages": "^6.3.0"
 	}
 }
