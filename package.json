@@ -43,7 +43,7 @@
 		"lint:fix": "eslint . --fix",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-    "deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build -t"
 	},
 	"type": "module",
 	"dependencies": {
