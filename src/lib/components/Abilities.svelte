@@ -14,20 +14,6 @@
 		}
 		return 'border-[#ffffff]'; // Silver
 	};
-
-	const label = function (level: number) {
-		switch (level) {
-			case 1:
-				return 'Bronze';
-			case 2:
-				return 'Silver';
-			case 3:
-				return 'Gold';
-			case 4:
-				return 'Platinum';
-		}
-		return 'None';
-	};
 </script>
 
 <div class="flex flex-wrap gap-2">

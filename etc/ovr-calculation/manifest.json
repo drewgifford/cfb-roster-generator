@@ -8,5 +8,5 @@
 		"default_title": "CFB Calculator",
 		"default_popup": "popup.html"
 	},
-	"web_accessible_resources": ["jquery.min.js", "content-script.js"]
+	"web_accessible_resources": ["dist/jquery.min.js", "content-script.js"]
 }

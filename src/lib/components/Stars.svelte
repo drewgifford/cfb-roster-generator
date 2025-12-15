@@ -5,7 +5,7 @@
 </script>
 
 <div class="flex inline-block gap-1">
-	{#each starArray as _, i (i)}
+	{#each starArray as [, i] (i)}
 		<span class="text-yellow-500">★</span>
 	{/each}
 </div>

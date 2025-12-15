@@ -29,7 +29,7 @@
 	<div>
 		<select class="select-bordered select w-48" bind:value={selectedPosition}>
 			<option value={null}>Choose a Position ({filteredRoster.length})</option>
-			{#each POSITION_ORDER as position}
+			{#each POSITION_ORDER as position (position)}
 				<option value={position}
 					>{position} ({getPlayersInPosition(position as PositionType)})</option
 				>
