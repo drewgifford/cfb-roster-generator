@@ -10,13 +10,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Zip extension folder
-        run: |
-          cd extension
-          zip -r ../cfb-roster-importer.xpi ./*
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cfb-roster-importer.xpi
-          path: cfb-roster-importer.xpi
+          name: cfb-roster-importer
+          path: ./cfb-roster-importer.xpi
