@@ -1,4 +1,4 @@
-name: CI/CD
+name: Lint and Build
 
 on:
   push:
