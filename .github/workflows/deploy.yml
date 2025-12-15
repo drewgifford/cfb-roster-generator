@@ -3,6 +3,10 @@ name: Lint, Build, and Deploy
 on:
   push:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest
