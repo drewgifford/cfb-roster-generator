@@ -39,6 +39,6 @@ export default defineConfig(
 		}
 	},
 	{
-		ignores: ['**/dist/**/*.js']
+		ignores: ['**/dist/**/*.js', 'extension/jquery.min.js']
 	}
 );

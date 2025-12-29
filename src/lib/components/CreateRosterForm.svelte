@@ -4,9 +4,12 @@
 
 	import { teamStore } from '$lib/stores/team.svelte';
 
+	const { isLoading } = $props<{ isLoading: boolean }>();
+
 	const teamConfig = $derived(teamStore.config);
 
 	function handleGenerateRoster() {
+		if (isLoading) return;
 		teamStore.generateRoster();
 	}
 </script>
@@ -21,7 +24,7 @@
 			class="range range-primary range-sm"
 			id="offense"
 			type="range"
-			min="12"
+			min="25"
 			max="99"
 			bind:value={teamConfig.offensiveOVR}
 			step="1"
@@ -33,7 +36,7 @@
 			class="range range-primary range-sm"
 			id="defense"
 			type="range"
-			min="12"
+			min="25"
 			max="99"
 			bind:value={teamConfig.defensiveOVR}
 			step="1"
@@ -81,8 +84,10 @@
 			{/each}
 		</select>
 
-		<button class="btn mt-4 max-w-80 btn-primary" onclick={handleGenerateRoster}
-			>Generate Roster</button
+		<button
+			disabled={isLoading}
+			class="btn mt-4 max-w-80 btn-primary"
+			onclick={handleGenerateRoster}>{isLoading ? 'Loading database...' : 'Generate Roster'}</button
 		>
 	</div>
 </div>

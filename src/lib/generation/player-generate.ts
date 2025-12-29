@@ -1,5 +1,5 @@
 import { generateRandomName } from '$lib/data/names';
-import { STAT_CATEGORIES, type PlayerStats } from '$lib/types/stats';
+import { STAT_NAMES, type PlayerStats } from '$lib/types/stats';
 import {
 	PositionGroups,
 	type MentalAbility,
@@ -11,6 +11,9 @@ import { OFFENSE_SCHEMES, DEFENSE_SCHEMES, type ArchetypeWeights } from '$lib/da
 import type { Dealbreaker, Handedness, Player, PlayerPotential, Year } from '$lib/types/player';
 import type { TeamConfig } from '$lib/types/team';
 import { calculatePlayerOvr } from '$lib/calculations/ovr';
+
+import { JsonProvider } from '$lib/util/db-provider';
+import { getRandomHeadIndex, getRandomSkinTone } from '$lib/data/images';
 
 export interface GeneratePlayerParams {
 	position: PositionType;
@@ -59,6 +62,9 @@ export function generatePlayer(params: GeneratePlayerParams) {
 
 	usedJerseyNumbers.add(jerseyNumber);
 
+	const skinTone = getRandomSkinTone();
+	const headIndex = getRandomHeadIndex(skinTone);
+
 	const player: Player = {
 		id: crypto.randomUUID(),
 		firstName,
@@ -79,7 +85,9 @@ export function generatePlayer(params: GeneratePlayerParams) {
 		depth,
 		abilities,
 		isLocked: false,
-		mentalAbilities
+		mentalAbilities,
+		skinTone,
+		headIndex
 	};
 	return player;
 }
@@ -562,7 +570,7 @@ function getTargetOvr(
 	}
 
 	depthPenalty = depthPenalty * (Math.random() * 0.2 + 0.9);
-	return Math.max(45, Math.min(99, Math.round(baseTeamOvr + roleMod - depthPenalty)));
+	return Math.max(25, Math.min(99, Math.round(baseTeamOvr + roleMod - depthPenalty)));
 }
 
 function getYear(targetOvr: number, depth: number): Year {
@@ -571,7 +579,7 @@ function getYear(targetOvr: number, depth: number): Year {
 
 	const maturityScore = ovrScore * 0.7 + depthScore * 0.3;
 
-	const rand = Math.random() + maturityScore * 0.4;
+	const rand = Math.random() + maturityScore * 0.6;
 
 	function getYearOrRedshirt(year: Year, redshirtYear: Year) {
 		const rand = Math.random();
@@ -598,15 +606,6 @@ function getDevTrait(targetOvr: number, year: Year, programRating: number): DevT
 	if (targetOvr > 80 && rand < 0.5) return 'Star';
 	if (targetOvr > 74 && rand < 0.7) return 'Impact';
 	return 'Normal';
-}
-
-function generateBellCurve(mean: number, stdDev: number = 10): number {
-	const u = 1 - Math.random(); // Converting [0,1) to (0,1]
-	const v = Math.random();
-	const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-
-	// Apply mean and deviation, then clamp between 1 and 99
-	return Math.max(1, Math.min(99, Math.round(z * stdDev + mean)));
 }
 
 function getPhysicals(positionData: PositionData, stats: PlayerStats, programRating: number) {
@@ -707,15 +706,46 @@ function getHSStarRating(ovr: number, year: Year, programRating: number): number
 			break;
 	}
 
-	const bias = programRating - 3;
+	const bias = (programRating - 3) * 3;
 	const randomBias = bias + (Math.random() * 2 - 1);
 	const recruitingScore = freshmanRating + randomBias;
 
-	if (recruitingScore >= 79) return 5;
-	if (recruitingScore >= 73) return 4;
-	if (recruitingScore >= 66) return 3;
-	if (recruitingScore >= 58) return 2;
+	console.log(programRating + ' star program score: ' + recruitingScore);
+
+	if (recruitingScore >= 90) return 5;
+	if (recruitingScore >= 77) return 4;
+	if (recruitingScore >= 67) return 3;
+	if (recruitingScore >= 56) return 2;
 	return 1;
+}
+
+function getAnchorStat(position: PositionType): string {
+	// Define anchor stats per position (stats that matter most)
+	const anchorMap: Record<string, string> = {
+		QB: 'THP',
+		HB: 'SPD',
+		FB: 'RBK',
+		WR: 'SPD',
+		TE: 'CTH',
+		LT: 'PBK',
+		LG: 'PBK',
+		C: 'PBK',
+		RG: 'PBK',
+		RT: 'PBK',
+		LE: 'PMV',
+		RE: 'PMV',
+		DT: 'BSH',
+		WILL: 'TAK',
+		MIKE: 'TAK',
+		SAM: 'TAK',
+		CB: 'SPD',
+		FS: 'SPD',
+		SS: 'TAK',
+		K: 'KPW',
+		P: 'KPW'
+	};
+
+	return anchorMap[position] || 'AWR';
 }
 
 function getStatsForArchetype(
@@ -723,6 +753,8 @@ function getStatsForArchetype(
 	archetypeKey: string,
 	targetOvr: number
 ): PlayerStats {
+	const data = JsonProvider.getData();
+
 	const posData = Positions[position];
 	const archetypeData = posData.overallsByArchetype[archetypeKey];
 	const positionGroup = posData.positionGroup;
@@ -731,59 +763,50 @@ function getStatsForArchetype(
 
 	if (!archetypeData || !statMeans) return {} as PlayerStats;
 
-	const { weights, intercept } = archetypeData;
+	const { weights } = archetypeData;
 	const stats: Record<string, number> = {};
 
-	// 1. Calculate the 'Required Mean'
-	// Instead of assuming Mean = TargetOvr, we solve for Mean:
-	// TargetOvr = (Mean * SumWeights) + Intercept
-	// Mean = (TargetOvr - Intercept) / SumWeights
-	let sumWeights = 0;
-	Object.values(weights).forEach((w) => (sumWeights += w || 0));
+	const model = data.rosterAnalysisData[position];
+	const archetypeDeltaHolder = model.archetypes[archetypeKey];
 
-	// Prevent divide by zero
-	if (sumWeights === 0) sumWeights = 1;
+	if (archetypeDeltaHolder) {
+		const anchorStat = getAnchorStat(position);
+		const anchorFormula = model.baselineFormulas[anchorStat];
+		const anchorBaseline = anchorFormula.slope * targetOvr + anchorFormula.intercept;
+		const anchorDelta = archetypeDeltaHolder.deltas[anchorStat] || 0;
+		const anchorStdDev = model.stdDevs[anchorStat] || 5;
 
-	// Calculate what the stats generally need to be to achieve the target
-	let requiredMean = (targetOvr - intercept) / sumWeights;
+		const anchorNoice = (Math.random() - 0.5) * anchorStdDev;
+		stats[anchorStat] = anchorBaseline + anchorDelta + anchorNoice;
 
-	// Clamp requiredMean to 99 so we don't try to generate stats of 150
-	// (We rely on the calibration loop to push them to the absolute cap if needed)
-	requiredMean = Math.min(99, Math.max(40, requiredMean));
+		const anchorDeviation = stats[anchorStat] - anchorBaseline;
 
-	// 2. Generate Stats based on STAT_CATEGORIES
-	Object.entries(STAT_CATEGORIES).forEach(([category, statList]) => {
-		statList.stats.forEach((stat) => {
-			const weight = weights[stat as keyof PlayerStats];
-			const isRelevant = weight !== undefined;
+		for (const stat of Object.keys(STAT_NAMES)) {
+			if (stat === anchorStat) continue;
 
-			let mean: number;
-			const stdDev = isRelevant ? 8 : 12; // Tighter variance for weighted stats
+			const formula = model.baselineFormulas[stat];
+			const delta = archetypeDeltaHolder.deltas[stat] || 0;
+			const baseline = formula.slope * targetOvr + formula.intercept;
 
-			if (isRelevant) {
-				mean = requiredMean;
-				// Keep flavor adjustments
-				if (weight > 0.15) mean += 5;
-				else if (weight < 0.05) mean -= 5;
-			} else {
-				mean = statMeans[category as keyof typeof statMeans] || 50;
-			}
+			const correlation = model.correlations[anchorStat]?.[stat] || 0;
+			const stdDev = model.stdDevs[stat] || 5;
+			const anchorStdDevRatio = anchorStdDev / stdDev;
 
-			stats[stat] = generateBellCurve(mean, stdDev);
-		});
-	});
+			const correlatedNoise = correlation * anchorDeviation * anchorStdDevRatio;
+			const independentNoise =
+				Math.sqrt(Math.max(0, 1 - correlation * correlation)) *
+				(Math.random() - 0.5) *
+				2 *
+				stdDev *
+				0.5;
 
-	// 3. Safety Check: Ensure ALL weighted stats exist
-	// If a stat is in 'weights' but NOT in STAT_CATEGORIES, the OVR calc will break (return NaN or low).
-	// We force generate them here.
-	Object.keys(weights).forEach((statKey) => {
-		if (stats[statKey] === undefined) {
-			const weight = weights[statKey as keyof PlayerStats];
-			let mean = requiredMean;
-			if (weight) mean += 5;
-			stats[statKey] = generateBellCurve(mean, 8);
+			stats[stat] = Math.round(baseline + delta + correlatedNoise + independentNoise);
 		}
-	});
+
+		for (const stat of Object.keys(STAT_NAMES)) {
+			stats[stat] = Math.max(1, Math.min(99, Math.round(stats[stat])));
+		}
+	}
 
 	// 4. Enhanced Calibration Loop
 	let iterations = 0;

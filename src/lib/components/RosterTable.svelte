@@ -60,7 +60,7 @@
 		> to import rosters into Team Builder.
 	</p>
 </div>
-<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 	{#each filteredRoster as player (player.id)}
 		<PlayerCard {player} />
 	{/each}

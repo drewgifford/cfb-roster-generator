@@ -83,4 +83,6 @@ export interface Player {
 	abilities: Record<string, number>;
 	mentalAbilities: Record<string, number>;
 	isLocked: boolean;
+	skinTone: number;
+	headIndex: number;
 }

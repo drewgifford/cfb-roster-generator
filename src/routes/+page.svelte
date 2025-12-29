@@ -4,10 +4,19 @@
 	import RosterTable from '$lib/components/RosterTable.svelte';
 	import PlayerForm from '$lib/components/PlayerForm.svelte';
 	import Overlay from '$lib/components/Overlay.svelte';
+	import { onMount } from 'svelte';
+	import { JsonProvider } from '$lib/util/db-provider';
+
+	let isLoading = $state(true);
+
+	onMount(async () => {
+		await JsonProvider.initializeData();
+		isLoading = false;
+	});
 </script>
 
 {#if !teamStore.hasRoster()}
-	<CreateRosterForm />
+	<CreateRosterForm {isLoading} />
 {:else}
 	<RosterTable />
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getHeadUrl } from '$lib/data/images';
 	import { teamStore } from '$lib/stores/team.svelte';
 	import type { Player } from '$lib/types/player';
 	import { formatHeight, isStatRelevantToArchetype } from '$lib/util/stats';
@@ -22,19 +23,25 @@
 	onclick={() => teamStore.selectPlayer(player.id)}
 >
 	<div class="card-body text-left">
-		<div class="inline-flex items-center gap-2">
-			<div class="badge badge-soft text-nowrap badge-primary">
-				{player.position} • #{player.jerseyNumber}
-			</div>
-			<h1 class="card-title truncate">{player.firstName} {player.lastName}</h1>
-			<OverallBadge ovr={player.ovr} />
-		</div>
+		<div class="flex items-center gap-2">
+			<img class="-mt-8 h-24 w-24 pointer-events-none" src={getHeadUrl(player.skinTone, player.headIndex)} alt="Head" />
 
-		<div class="flex flex-col gap-1">
-			<p class="card-text opacity-50">{player.year} • {player.devTrait} • {player.archetype}</p>
-			<p class="card-text">
-				{formatHeight(player.height)} • {player.weight}lbs <Stars stars={player.starRating} />
-			</p>
+			<div class="flex-1">
+				<div class="inline-flex items-center gap-2">
+					<div class="badge badge-soft text-nowrap badge-primary">
+						{player.position} • #{player.jerseyNumber}
+					</div>
+					<h1 class="card-title">{player.firstName} {player.lastName}</h1>
+					<OverallBadge ovr={player.ovr} />
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<p class="card-text opacity-50">{player.year} • {player.devTrait} • {player.archetype}</p>
+					<p class="card-text">
+						{formatHeight(player.height)} • {player.weight}lbs <Stars stars={player.starRating} />
+					</p>
+				</div>
+			</div>
 		</div>
 
 		<!-- Top abilities -->

@@ -11,6 +11,7 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.17",
 		"@types/node": "^24",
+		"@types/sql.js": "^1.4.9",
 		"@vitest/browser-playwright": "^4.0.15",
 		"daisyui": "^5.5.13",
 		"eslint": "^9.39.1",
@@ -45,11 +46,16 @@
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
 		"deploy": "gh-pages -d build -t",
-    "build:extension": "web-ext build --source-dir extension --artifacts-dir dist"
-	},
+		"generate:db": "bun etc/scripts/make-sqlite-db.ts",
+		"build:chrome": "cp extension/manifest.chrome.json extension/manifest.json && web-ext build --source-dir extension --artifacts-dir dist/chrome --overwrite-dest && rm extension/manifest.json",
+		"build:firefox": "cp extension/manifest.firefox.json extension/manifest.json && web-ext build --source-dir extension --artifacts-dir dist/firefox --overwrite-dest && rm extension/manifest.json",
+    "build:extension": "npm run build:chrome && npm run build:firefox"
+  },
 	"type": "module",
 	"dependencies": {
 		"@2toad/profanity": "^3.2.0",
-		"gh-pages": "^6.3.0"
+		"fast-csv": "^5.0.5",
+		"gh-pages": "^6.3.0",
+		"zod": "^4.2.1"
 	}
 }

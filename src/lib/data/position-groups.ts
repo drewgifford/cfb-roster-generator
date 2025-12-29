@@ -1891,13 +1891,13 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 					{
 						name: 'Deep Range',
 						requirements: {
-							KAC: [86, 88, 91, 95]
+							KPW: [86, 88, 91, 95]
 						}
 					},
 					{
 						name: 'Mega Leg',
 						requirements: {
-							KPW: [93, 95, 96, 97]
+							KAC: [93, 95, 96, 97]
 						}
 					}
 				]
@@ -1908,13 +1908,13 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 					{
 						name: 'Deep Range',
 						requirements: {
-							KAC: [86, 88, 91, 95]
+							KPW: [86, 88, 91, 95]
 						}
 					},
 					{
 						name: 'Mega Leg',
 						requirements: {
-							KPW: [93, 95, 96, 97]
+							KAC: [93, 95, 96, 97]
 						}
 					},
 					{

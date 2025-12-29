@@ -3,10 +3,14 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
 	'value'
 ).set;
 
+
 (() => {
 	if (document.getElementById('__json_importer')) return;
 
+
 	const container = document.createElement('div');
+
+  const iconUrl = chrome.runtime.getURL('icons/icon-64.png');
 	container.id = '__json_importer';
 	container.style.cssText = `
     position: fixed;
@@ -20,21 +24,48 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
   `;
 
 	container.innerHTML = `
-    <strong>Import JSON</strong><br/>
-    <input type="file" id="jsonFile" accept=".json" />
-    <button id="import">Import</button>
-    <p class="cfb__status" style="color: white;"></p>
-    <p class="cfb__error" style="color: red;"></p>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+      <img src="${iconUrl}" alt="CFB26 Roster Importer" style="width: 32px; height: 32px;" />
+      <div style="flex: 1;">
+        <strong>Import JSON</strong><br/>
+        <input type="file" id="jsonFile" accept=".json" />
+        <button id="import">Import</button>
+        <button id="stop" style="display: none;">Stop</button>
+        <p class="cfb__status" style="color: white;"></p>
+        <p class="cfb__error" style="color: red;"></p>
+      </div>
+    </div>
   `;
 
 	document.body.appendChild(container);
 
 	container.querySelector('#import').onclick = () => importData();
+	container.querySelector('#stop').onclick = () => cancelImport();
 })();
+
+let isImporting = false;
+let shouldStop = false;
+
+function cancelImport() {
+  shouldStop = true;
+  stopImport();
+}
+
+function stopImport() {
+  document.querySelector('#stop').style.display = 'none';
+  document.querySelector('#import').style.display = 'block';
+}
+
+function startImport() {
+  document.querySelector('#stop').style.display = 'block';
+  document.querySelector('#import').style.display = 'none';
+}
 
 function importData() {
 	const file = document.getElementById('jsonFile').files[0];
 	if (!file) return;
+
+  startImport();
 
 	const reader = new FileReader();
 	reader.onload = (e) => {
@@ -46,7 +77,14 @@ function importData() {
 }
 
 async function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+  const interval = 50;
+  let elapsed = 0;
+
+  while (elapsed < ms) {
+    if (shouldStop) throw new Error('IMPORT_STOPPED');
+    await new Promise(r => setTimeout(r, interval));
+    elapsed += interval;
+  }
 }
 
 function setStatus(text) {
@@ -60,6 +98,10 @@ function setError(text) {
 }
 
 async function importRoster(data) {
+  if (isImporting) return;
+  isImporting = true;
+  shouldStop = false;
+
 	try {
 		const { preset, programRating, roster } = data;
 
@@ -92,6 +134,9 @@ async function importRoster(data) {
 
 		let playerCount = 0;
 		for (const button of buttons) {
+
+      if (shouldStop) throw new Error('IMPORT_STOPPED');
+
 			setStatus(`Inputting player ${playerCount + 1} of ${buttons.length}...`);
 
 			const positionLabel = $(button).find('div.player-ticket--info .fw-400').text().trim();
@@ -107,14 +152,26 @@ async function importRoster(data) {
 
 		setStatus('Roster imported successfully!');
 	} catch (error) {
-		setError('Error importing roster');
-		console.error(error);
-	}
+    if (error.message === 'IMPORT_STOPPED') {
+      setStatus('Import cancelled');
+      return;
+    } else {
+      setError('Error importing roster');
+      console.error(error);
+    }
+	} finally {
+    isImporting = false;
+    shouldStop = false;
+    stopImport();
+  }
 }
 
 function simulateUserInput(input, value) {
 	// Focus the input
 	input.focus();
+
+  // Check if the input already has the value
+  if (input.value === value) return;
 
 	// Use the native setter to set the value (bypasses Angular's interception)
 	nativeInputValueSetter.call(input, String(value));
@@ -210,10 +267,10 @@ function simulateUserSelect($input, value) {
 	}
 	const option = valueMap[value];
 
-  if (!option) {
-    console.warn(`Option ${value} not found for input ${input.value}, skipping...`);
-    return;
-  }
+	if (!option) {
+		console.warn(`Option ${value} not found for input ${input.value}, skipping...`);
+		return;
+	}
 
 	option.selected = true;
 	input.value = option.value;
@@ -254,12 +311,14 @@ function selectAllFilter() {
 }
 
 async function inputPlayer(button, player) {
+  if (shouldStop) throw new Error('IMPORT_STOPPED');
+
 	$(button).get(0).click();
 	await sleep(100);
 	await inputPlayerBio(player);
 	await sleep(100);
 	await inputPlayerStats(player);
-  await sleep(500);
+	await sleep(500);
 }
 
 async function inputPlayerStats(player) {
@@ -285,7 +344,7 @@ async function inputPlayerStats(player) {
 		}
 	}
 
-  await sleep(100);
+	await sleep(100);
 
 	const $selectContainers = $('app-roster-content .select-wrapper');
 	for (const container of $selectContainers) {
@@ -332,7 +391,7 @@ async function inputPlayerStats(player) {
 		}
 	}
 
-  await sleep(100);
+	await sleep(100);
 
 	// Workaround for mental abilities not being selected correctly
 	const mentalAbilityIds = ['MentalAbility0', 'MentalAbility1', 'MentalAbility2'];
@@ -355,7 +414,7 @@ async function inputPlayerStats(player) {
 		}
 	}
 
-  await sleep(100);
+	await sleep(100);
 
 	const $abilityContainers = $('app-abilities .flex-row.ng-star-inserted');
 	for (const container of $abilityContainers) {
@@ -368,7 +427,7 @@ async function inputPlayerStats(player) {
 		}
 	}
 
-  await sleep(100);
+	await sleep(100);
 
 	for (const id of mentalAbilityIds) {
 		const container = $(`#${id}`);
@@ -466,14 +525,14 @@ async function inputPlayerBio(player) {
 	// Select skin tone
 	// TODO: Make skin tone on the player object
 	const $skinToneContainer = $('app-player-appearance .filterGroup--colors button');
-	const skinRand = Math.floor(Math.random() * $skinToneContainer.length);
-	const skinToneButton = $skinToneContainer.get(skinRand);
+	const skinTone = player.skinTone;
+	const skinToneButton = $skinToneContainer.get(skinTone);
 	skinToneButton.click();
 
 	// Select head
 	const $headContainer = $('app-player-appearance .filterGroup--design--xl button');
-	const headRand = Math.floor(Math.random() * $headContainer.length);
-	const headButton = $headContainer.get(headRand);
+	const headIndex = player.headIndex;
+	const headButton = $headContainer.get(headIndex);
 	headButton.click();
 
 	await sleep(2000);

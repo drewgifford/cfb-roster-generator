@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { calculatePlayerOvr } from '$lib/calculations/ovr';
+	import { getHeadUrl, headUrls } from '$lib/data/images';
 	import { getArchetypesForPosition } from '$lib/data/positions';
 	import { teamStore } from '$lib/stores/team.svelte';
 	import {
@@ -66,75 +67,113 @@
 				</button>
 			</div>
 
-			<h1 class="card-title text-3xl">
-				<div class="badge badge-primary">{selectedPlayer.position}</div>
-				{selectedPlayer.firstName}
-				{selectedPlayer.lastName}
-				<!-- This badge will now update live -->
-				<OverallBadge ovr={selectedPlayer.ovr} />
-			</h1>
+      <div class="flex items-center gap-4">
 
-			<div>
-				<h2 class="text-lg font-bold">Player Bio</h2>
-				<div class="flex max-w-4xl flex-wrap gap-2">
-					<div>
-						<label for="firstName">First Name</label>
-						<!-- Using oninput for live updates while typing -->
-						<input
-							type="text"
-							id="firstName"
-							class="input-bordered input"
-							value={selectedPlayer.firstName}
-							oninput={(e) => update({ firstName: e.currentTarget.value })}
+        <div class="flex flex-col gap-2">
+          <img class="-mt-8 h-36 w-36 pointer-events-none" src={getHeadUrl(selectedPlayer.skinTone, selectedPlayer.headIndex)} alt="Head" />
+        
+          <div class="flex flex-col gap-2">
+            <div>
+              <label for="skinTone">Skin Tone</label>
+              <input
+							class="range range-primary range-sm"
+							id="skinTone"
+							type="range"
+							min="0"
+							max="7"
+							step="1"
+							value={selectedPlayer.skinTone}
+							oninput={(e) => update({ skinTone: Number(e.currentTarget.value) })}
 						/>
-					</div>
-					<div>
-						<label for="lastName">Last Name</label>
-						<input
-							type="text"
-							id="lastName"
-							class="input-bordered input"
-							value={selectedPlayer.lastName}
-							oninput={(e) => update({ lastName: e.currentTarget.value })}
+            </div>
+            <div>
+              <label for="headIndex">Head</label>
+              <input
+							class="range range-primary range-sm"
+							id="headIndex"
+							type="range"
+							min="0"
+							max={headUrls[selectedPlayer.skinTone as keyof typeof headUrls].length - 1}
+							step="1"
+							value={selectedPlayer.headIndex}
+							oninput={(e) => update({ headIndex: Number(e.currentTarget.value) })}
 						/>
-					</div>
-
-					<div>
-						<label for="year">Year</label>
-						<select
-							id="year"
-							class="select-soft select min-w-24"
-							value={selectedPlayer.year}
-							onchange={(e) => update({ year: e.currentTarget.value as Year })}
-						>
-							{#each YEARS as year (year)}
-								<option value={year}>{YEAR_DISPLAY[year]}</option>
-							{/each}
-						</select>
-					</div>
-
-					<div class="max-w-24">
-						<label for="height">Height ({formatHeight(selectedPlayer.height)})</label>
-						<input
-							type="number"
-							id="height"
-							class="input-bordered input"
-							value={selectedPlayer.height}
-							oninput={(e) => update({ height: Number(e.currentTarget.value) })}
-						/>
-					</div>
-					<div class="max-w-24">
-						<label for="weight">Weight (lbs)</label>
-						<input
-							type="number"
-							id="weight"
-							class="input-bordered input"
-							value={selectedPlayer.weight}
-							oninput={(e) => update({ weight: Number(e.currentTarget.value) })}
-						/>
-					</div>
-				</div>
-			</div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="flex-1">
+          <h1 class="card-title text-3xl">
+            <div class="badge badge-primary">{selectedPlayer.position}</div>
+            {selectedPlayer.firstName}
+            {selectedPlayer.lastName}
+            <OverallBadge ovr={selectedPlayer.ovr} />
+          </h1>
+    
+          <div>
+            <h2 class="text-lg font-bold">Player Bio</h2>
+            <div class="flex max-w-4xl flex-wrap gap-2">
+              <div>
+                <label for="firstName">First Name</label>
+                <!-- Using oninput for live updates while typing -->
+                <input
+                  type="text"
+                  id="firstName"
+                  class="input-bordered input"
+                  value={selectedPlayer.firstName}
+                  oninput={(e) => update({ firstName: e.currentTarget.value })}
+                />
+              </div>
+              <div>
+                <label for="lastName">Last Name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  class="input-bordered input"
+                  value={selectedPlayer.lastName}
+                  oninput={(e) => update({ lastName: e.currentTarget.value })}
+                />
+              </div>
+    
+              <div>
+                <label for="year">Year</label>
+                <select
+                  id="year"
+                  class="select-soft select min-w-24"
+                  value={selectedPlayer.year}
+                  onchange={(e) => update({ year: e.currentTarget.value as Year })}
+                >
+                  {#each YEARS as year (year)}
+                    <option value={year}>{YEAR_DISPLAY[year]}</option>
+                  {/each}
+                </select>
+              </div>
+    
+              <div class="max-w-24">
+                <label for="height">Height ({formatHeight(selectedPlayer.height)})</label>
+                <input
+                  type="number"
+                  id="height"
+                  class="input-bordered input"
+                  value={selectedPlayer.height}
+                  oninput={(e) => update({ height: Number(e.currentTarget.value) })}
+                />
+              </div>
+              <div class="max-w-24">
+                <label for="weight">Weight (lbs)</label>
+                <input
+                  type="number"
+                  id="weight"
+                  class="input-bordered input"
+                  value={selectedPlayer.weight}
+                  oninput={(e) => update({ weight: Number(e.currentTarget.value) })}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
 			<div>
 				<h2 class="text-lg font-bold">Player Traits</h2>
