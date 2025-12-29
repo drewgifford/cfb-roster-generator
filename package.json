@@ -49,8 +49,8 @@
 		"generate:db": "bun etc/scripts/make-sqlite-db.ts",
 		"build:chrome": "cp extension/manifest.chrome.json extension/manifest.json && web-ext build --source-dir extension --artifacts-dir dist/chrome --overwrite-dest && rm extension/manifest.json",
 		"build:firefox": "cp extension/manifest.firefox.json extension/manifest.json && web-ext build --source-dir extension --artifacts-dir dist/firefox --overwrite-dest && rm extension/manifest.json",
-    "build:extension": "npm run build:chrome && npm run build:firefox"
-  },
+		"build:extension": "npm run build:chrome && npm run build:firefox"
+	},
 	"type": "module",
 	"dependencies": {
 		"@2toad/profanity": "^3.2.0",

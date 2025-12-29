@@ -56,7 +56,8 @@
 		Download the <a
 			target="_blank"
 			class="text-blue-500"
-			href="https://github.com/drewgifford/cfb-roster-generator">Firefox extension on GitHub</a
+			href="https://github.com/drewgifford/cfb-roster-generator"
+			>Chrome &amp; Firefox extension on GitHub</a
 		> to import rosters into Team Builder.
 	</p>
 </div>

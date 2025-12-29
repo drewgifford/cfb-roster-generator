@@ -3,14 +3,12 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
 	'value'
 ).set;
 
-
 (() => {
 	if (document.getElementById('__json_importer')) return;
 
-
 	const container = document.createElement('div');
 
-  const iconUrl = chrome.runtime.getURL('icons/icon-64.png');
+	const iconUrl = chrome.runtime.getURL('icons/icon-64.png');
 	container.id = '__json_importer';
 	container.style.cssText = `
     position: fixed;
@@ -47,25 +45,25 @@ let isImporting = false;
 let shouldStop = false;
 
 function cancelImport() {
-  shouldStop = true;
-  stopImport();
+	shouldStop = true;
+	stopImport();
 }
 
 function stopImport() {
-  document.querySelector('#stop').style.display = 'none';
-  document.querySelector('#import').style.display = 'block';
+	document.querySelector('#stop').style.display = 'none';
+	document.querySelector('#import').style.display = 'block';
 }
 
 function startImport() {
-  document.querySelector('#stop').style.display = 'block';
-  document.querySelector('#import').style.display = 'none';
+	document.querySelector('#stop').style.display = 'block';
+	document.querySelector('#import').style.display = 'none';
 }
 
 function importData() {
 	const file = document.getElementById('jsonFile').files[0];
 	if (!file) return;
 
-  startImport();
+	startImport();
 
 	const reader = new FileReader();
 	reader.onload = (e) => {
@@ -77,14 +75,14 @@ function importData() {
 }
 
 async function sleep(ms) {
-  const interval = 50;
-  let elapsed = 0;
+	const interval = 50;
+	let elapsed = 0;
 
-  while (elapsed < ms) {
-    if (shouldStop) throw new Error('IMPORT_STOPPED');
-    await new Promise(r => setTimeout(r, interval));
-    elapsed += interval;
-  }
+	while (elapsed < ms) {
+		if (shouldStop) throw new Error('IMPORT_STOPPED');
+		await new Promise((r) => setTimeout(r, interval));
+		elapsed += interval;
+	}
 }
 
 function setStatus(text) {
@@ -98,9 +96,9 @@ function setError(text) {
 }
 
 async function importRoster(data) {
-  if (isImporting) return;
-  isImporting = true;
-  shouldStop = false;
+	if (isImporting) return;
+	isImporting = true;
+	shouldStop = false;
 
 	try {
 		const { preset, programRating, roster } = data;
@@ -134,8 +132,7 @@ async function importRoster(data) {
 
 		let playerCount = 0;
 		for (const button of buttons) {
-
-      if (shouldStop) throw new Error('IMPORT_STOPPED');
+			if (shouldStop) throw new Error('IMPORT_STOPPED');
 
 			setStatus(`Inputting player ${playerCount + 1} of ${buttons.length}...`);
 
@@ -152,26 +149,26 @@ async function importRoster(data) {
 
 		setStatus('Roster imported successfully!');
 	} catch (error) {
-    if (error.message === 'IMPORT_STOPPED') {
-      setStatus('Import cancelled');
-      return;
-    } else {
-      setError('Error importing roster');
-      console.error(error);
-    }
+		if (error.message === 'IMPORT_STOPPED') {
+			setStatus('Import cancelled');
+			return;
+		} else {
+			setError('Error importing roster');
+			console.error(error);
+		}
 	} finally {
-    isImporting = false;
-    shouldStop = false;
-    stopImport();
-  }
+		isImporting = false;
+		shouldStop = false;
+		stopImport();
+	}
 }
 
 function simulateUserInput(input, value) {
 	// Focus the input
 	input.focus();
 
-  // Check if the input already has the value
-  if (input.value === value) return;
+	// Check if the input already has the value
+	if (input.value === value) return;
 
 	// Use the native setter to set the value (bypasses Angular's interception)
 	nativeInputValueSetter.call(input, String(value));
@@ -311,7 +308,7 @@ function selectAllFilter() {
 }
 
 async function inputPlayer(button, player) {
-  if (shouldStop) throw new Error('IMPORT_STOPPED');
+	if (shouldStop) throw new Error('IMPORT_STOPPED');
 
 	$(button).get(0).click();
 	await sleep(100);

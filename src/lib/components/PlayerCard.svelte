@@ -24,7 +24,11 @@
 >
 	<div class="card-body text-left">
 		<div class="flex items-center gap-2">
-			<img class="-mt-8 h-24 w-24 pointer-events-none" src={getHeadUrl(player.skinTone, player.headIndex)} alt="Head" />
+			<img
+				class="pointer-events-none -mt-8 h-24 w-24"
+				src={getHeadUrl(player.skinTone, player.headIndex)}
+				alt="Head"
+			/>
 
 			<div class="flex-1">
 				<div class="inline-flex items-center gap-2">
