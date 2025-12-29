@@ -1,38 +1,28 @@
-# sv
+# CFB Roster Generator
+This is a client-side web app that automatically generates a roster that can be imported into Team Builder for EA CFB 26.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+You can visit the live website at https://cfb.drewgifford.com
 
-## Creating a project
+# Browser Extension
+To import your team into Team Builder, you need to download a browser extension from the [releases tab](https://github.com/drewgifford/cfb-roster-generator/releases/).
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Firefox Installation
+1. Download the Firefox release from the releases tab.
+2. Navigate to `about:debugging#/runtime/this-firefox` in your search bar.
+3. Click "Load Temporary add-on", and import `cfb26_roster_importer-X.X-firefox.zip`
+4. On Team Builder, you should see a pop-up at the bottom right-hand side of the screen.
 
-```sh
-# create a new project in the current directory
-npx sv create
+## Chrome Installation
+1. Download the Chrome release from the releases tab.
+2. Unzip `cfb26_roster_importer-X.X-chrome.zip` into its own folder you can locate later.
+3. Navigate to `chrome://extensions` in your search bar.
+4. Enable "Developer Mode" at the top-right of the page. New buttons should appear on the left.
+5. Click "Load unpacked". Locate the folder you unzipped the previous ZIP into, and select it.
+6. Once loaded, you should see a pop-up at the bottom right-hand side of the screen on Team Builder.
 
-# create a new project in my-app
-npx sv create my-app
-```
+# How to Use
+1. Export your JSON file from the roster generator.
+2. Install the extension for your browser if you haven't already.
+3. Go to Team Builder, you should see a new popup at the bottom right. Click "Choose File", find your exported `.json` file, and click "Import".
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+(note): Roster importing may take a few minutes, and may rarely make mistakes. You may want to manually review its progress, or re-run the importer tool after initial completion.
