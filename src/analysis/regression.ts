@@ -111,6 +111,8 @@ export function analyzePosition(allPlayers: PlayerDb[], position: string): Posit
 	const uniqueArchetypes = [...new Set(players.map((p) => p.archetype))];
 
 	uniqueArchetypes.forEach((archetype) => {
+		if (archetype === 'Edge Setter') archetype = 'Gap Specialist';
+
 		const archetypePlayers = players.filter((p) => p.archetype === archetype);
 		const deltas: Record<string, number> = {};
 

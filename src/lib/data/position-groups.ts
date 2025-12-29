@@ -674,7 +674,7 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 					}
 				]
 			},
-			{
+			/*{ disabling gadged and gritty possession because there's nobody in EA CFB 26 that has this, at least in my spreadsheet lol
 				name: 'Gadget',
 				abilities: [
 					{
@@ -709,8 +709,8 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 						}
 					}
 				]
-			},
-			{
+			},*/
+			/*{
 				name: 'Gritty Possession',
 				abilities: [
 					{
@@ -744,7 +744,7 @@ export const PositionGroups: Record<PositionGroupType, PositionGroup> = {
 						}
 					}
 				]
-			},
+			},*/
 			{
 				name: 'Physical Route Runner',
 				abilities: [
